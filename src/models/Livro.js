@@ -1,19 +1,23 @@
 import mongoose from 'mongoose';
-import { autorSchema } from './Autor.js';
 
 const livroSchema = new mongoose.Schema(
   {
-    id: { type: mongoose.Schema.Types.ObjectId },
+    id: { type: String },
     titulo: { type: String, required: true },
-    editora: { type: String },
-    preco: { type: Number },
-    paginas: { type: Number },
-    autor: autorSchema,
+    autor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'autores',
+      required: true,
+    },
+    editora: { type: String, required: true },
+    numeroPaginas: { type: Number },
   },
-  { versionKey: false }
+  {
+    versionKey: false,
+  }
 );
 
-//primeiro parâmetro é o nome da coleção criada no mongodb
-const livro = mongoose.model('livros', livroSchema);
+//primeiro parâmetro é a coleção criada no banco
+const livros = mongoose.model('livros', livroSchema);
 
-export default livro;
+export default livros;

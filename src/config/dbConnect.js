@@ -4,10 +4,9 @@ import mongoose from 'mongoose';
 criado na raiz do projeto. Para funcionar deve ser instalado o dotenv
 e depois iniciado o dotenv no ponto mais inicial do projeto, nesse caso
 no arquivo server.js*/
-async function conectaNaDatabase() {
-  mongoose.connect(process.env.DB_CONNECTION_STRING);
 
-  return mongoose.connection;
-}
+mongoose.connect(process.env.DB_CONNECTION_STRING);
 
-export default conectaNaDatabase;
+let db = mongoose.connection;
+
+export default db;
