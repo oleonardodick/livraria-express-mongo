@@ -1,4 +1,5 @@
-import livros from '../models/Livro.js';
+import NaoEncontrado from '../erros/NaoEncontrado.js';
+import { livros } from '../models/index.js';
 
 class LivroController {
   static listarLivros = async (req, res, next) => {
@@ -25,7 +26,7 @@ class LivroController {
       if (livroResultados) {
         res.status(200).send(livroResultados);
       } else {
-        res.status(404).send('Livro não localizado');
+        next(LivroNaoLocalizado());
       }
     } catch (erro) {
       next(erro);
@@ -50,7 +51,11 @@ class LivroController {
 
       await livros.findByIdAndUpdate(id, { $set: req.body });
 
-      res.status(200).send({ message: 'Livro atualizado com sucesso' });
+      if (livros) {
+        res.status(200).send({ message: 'Livro atualizado com sucesso' });
+      } else {
+        next(LivroNaoLocalizado());
+      }
     } catch (erro) {
       next(erro);
     }
@@ -62,7 +67,11 @@ class LivroController {
 
       await livros.findByIdAndDelete(id);
 
-      res.status(200).send({ message: 'Livro removido com sucesso' });
+      if (livros) {
+        res.status(200).send({ message: 'Livro removido com sucesso' });
+      } else {
+        next(LivroNaoLocalizado());
+      }
     } catch (erro) {
       next(erro);
     }
@@ -79,6 +88,10 @@ class LivroController {
       next(erro);
     }
   };
+}
+
+function LivroNaoLocalizado() {
+  return new NaoEncontrado('Livro não localizado');
 }
 
 export default LivroController;
