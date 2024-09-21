@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import autopopulate from 'mongoose-autopopulate';
 
 const livroSchema = new mongoose.Schema(
   {
@@ -11,6 +12,10 @@ const livroSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'autores',
       required: [true, 'O autor(a) é obrigatório(a)'],
+      autopopulate: true, //diz ao mongoose que esse campo usará o autopopulate
+      /*Caso se deseje definir quais campos o populate deve trazer, ao invés
+      mandar true, deve ser mandado um select com os campos: autopopulate: { select: "nome" }
+      */
     },
     editora: {
       type: String,
@@ -40,6 +45,11 @@ const livroSchema = new mongoose.Schema(
     versionKey: false,
   }
 );
+
+/*coloca o plugin de autopopulate no schema, mesmo com essa parte, o mongoose
+ainda não vai popular os campos necessários. É preciso definir isso no
+campo do schema.*/
+livroSchema.plugin(autopopulate);
 
 //primeiro parâmetro é a coleção criada no banco
 const livros = mongoose.model('livros', livroSchema);

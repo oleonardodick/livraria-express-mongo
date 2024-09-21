@@ -4,9 +4,9 @@ import { autores, livros } from '../models/index.js';
 class LivroController {
   static listarLivros = async (req, res, next) => {
     try {
-      const livrosResultado = await livros.find().populate('autor').exec();
-
-      res.status(200).json(livrosResultado);
+      const buscaLivros = livros.find();
+      req.resultado = buscaLivros;
+      next();
     } catch (erro) {
       next(erro);
     }
@@ -17,10 +17,13 @@ class LivroController {
       const id = req.params.id;
 
       /*o populate é utilizado para definir quais campos se deseja retornar do objeto autor.
-      Caso quisesse trazer mais dados, poderia ser populate('autor', 'nome nacionalidade')*/
+      Caso quisesse trazer mais dados, poderia ser populate('autor', 'nome nacionalidade')
+      Passar o populate só é necessário caso não se tenha o plugin mongoose-autopopulate instalado.*/
       const livroResultados = await livros
         .findById(id)
-        .populate('autor', 'nome')
+        /*Regra necessária para desligar o autopopulate e fazer um populate manual:
+        .findById(id,{},{autopopulate:false})
+        .populate('autor', 'nome')*/
         .exec();
 
       if (livroResultados) {
@@ -81,9 +84,9 @@ class LivroController {
     try {
       const busca = await processaBusca(req.query);
       if (busca) {
-        const livrosResultado = await livros.find(busca).populate('autor');
-
-        res.status(200).send(livrosResultado);
+        const livrosResultado = livros.find(busca);
+        req.resultado = livrosResultado;
+        next();
       } else {
         res.status(200).send([]);
       }
